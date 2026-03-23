@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  # ── Your Web App ─────────────────────────────────────────────
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aspire-telemetry-app
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # ── Application Insights (primary telemetry backend) ──────
+      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING}
+      # ── Service identity ──────────────────────────────────────
+      - OTEL_SERVICE_NAME=AspireTelemetryApp
+      - OTEL_SERVICE_VERSION=1.0.0
+      # ── OTLP export disabled (no Aspire Dashboard) ────────────
+      # Uncomment and set if you want to also send to an OTLP backend:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://host.docker.internal:18889
+    restart: unless-stopped
